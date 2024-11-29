@@ -97,15 +97,15 @@ class VideoDataset(Dataset):
 
     def __initialize(self):
         if self.train:
-            self.root_frames = os.path.join(self.root, 'training', 'frames/*')
+            self.root_frames = os.path.join(self.root, 'Train')
         else:
-            self.root_frames = os.path.join(self.root, 'testing', 'frames/*')
+            self.root_frames = os.path.join(self.root, 'Test')
 
-        videos = glob.glob(self.root_frames)
+        videos = [d for d in glob.glob(self.root_frames + '/*') if os.path.isdir(d)]
         for i, video_path in enumerate(sorted(videos)):
             self.videos[i] = {}
             self.videos[i]['path'] = video_path
-            self.videos[i]['frames'] = glob.glob(os.path.join(video_path, '*.jpg'))
+            self.videos[i]['frames'] = glob.glob(os.path.join(video_path, '*.tif'))
             self.videos[i]['frames'].sort(key=sort_file_names)
             self.frame_addresses += self.videos[i]['frames']
             self.videos[i]['length'] = len(self.videos[i]['frames'])
@@ -292,27 +292,31 @@ class VideoDatasetWithFlows(Dataset):
 
     def __initialize(self):
         if self.train:
-            self.root_frames = os.path.join(self.root, 'training', 'frames/*')
-            self.root_frames_flows = os.path.join(self.root, 'training', 'flows/*')
+            self.root_frames = os.path.join(self.root, 'Train')
+            self.root_frames_flows = os.path.join(self.root, 'Train')
         else:
-            self.root_frames = os.path.join(self.root, 'testing', 'frames/*')
-            self.root_frames_flows = os.path.join(self.root, 'testing', 'flows/*')
+            self.root_frames = os.path.join(self.root, 'Test')
+            self.root_frames_flows = os.path.join(self.root, 'Test')
 
-        videos = glob.glob(self.root_frames_flows)
+        #videos = glob.glob(self.root_frames_flows)
+        videos = [d for d in glob.glob(self.root_frames_flows + '/*') if os.path.isdir(d)]
         for i, video_path in enumerate(sorted(videos)):
             self.flows[i] = {}
             self.flows[i]['path'] = video_path
-            self.flows[i]['frames'] = glob.glob(os.path.join(video_path, '*.npy'))
+            self.flows[i]['frames'] = glob.glob(os.path.join(video_path, '*.npy')) #change to npz
             self.flows[i]['frames'].sort(key=sort_file_names)
             self.frame_addresses_flows += self.flows[i]['frames']
             self.flows[i]['length'] = len(self.flows[i]['frames'])
 
-        videos = glob.glob(self.root_frames)
+        #videos = glob.glob(self.root_frames)
+        videos = [d for d in glob.glob(self.root_frames + '/*') if os.path.isdir(d)]
         for i, video_path in enumerate(sorted(videos)):
             self.videos[i] = {}
             self.videos[i]['path'] = video_path
-            self.videos[i]['frames'] = glob.glob(os.path.join(video_path, '*.jpg'))
+            self.videos[i]['frames'] = glob.glob(os.path.join(video_path, '*.tif'))
             self.videos[i]['frames'].sort(key=sort_file_names)
+            # remove last frame as there is no flow for it
+            self.videos[i]['frames'] = self.videos[i]['frames'][:-1]
             self.frame_addresses += self.videos[i]['frames']
             self.videos[i]['length'] = len(self.videos[i]['frames'])
             self.frame_video_idx += [i] * self.videos[i]['length']

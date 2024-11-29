@@ -156,5 +156,5 @@ if __name__ == '__main__':
     parser.add_argument("--dataset_name", type=str, default="ped2", help='dataset name')
     parser.add_argument("--train", action='store_true', help='train or test data')
     args = parser.parse_args()
-    root = 'data/'
+    root = '/local/scratch/irr_prediction/datasets'
     extract(dataset_root=root, dataset_name=args.dataset_name, train=args.train)
